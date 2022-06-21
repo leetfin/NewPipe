@@ -108,6 +108,10 @@ public final class PicassoHelper {
         return loadImageDefault(url, R.drawable.placeholder_thumbnail_video, false);
     }
 
+    public static RequestCreator loadDetailsThumbnail(final String url) {
+        return loadImageDefault(url, R.drawable.dummy_thumbnail, false);
+    }
+
     public static RequestCreator loadBanner(final String url) {
         return loadImageDefault(url, R.drawable.placeholder_channel_banner);
     }

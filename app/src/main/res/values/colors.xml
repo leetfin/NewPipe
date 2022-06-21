@@ -6,8 +6,8 @@
 
     <color name="ic_launcher_background">#CD201F</color>
 
-    <color name="placeholder_background">#999999</color>
-    <color name="placeholder_foreground">#6C6C6C</color>
+    <color name="placeholder_background">#F6F6F6</color>
+    <color name="placeholder_foreground">#6E6E6E</color>
 
     <!-- Light Theme -->
     <color name="light_background_color">#EEEEEE</color>
