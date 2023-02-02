@@ -120,6 +120,7 @@ import org.schabi.newpipe.util.external_communication.KoreUtils;
 import org.schabi.newpipe.util.external_communication.ShareUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -1993,10 +1994,9 @@ public final class VideoDetailFragment
                 .BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && (isInMultiWindow || (isPlayerAvailable() && player.isFullscreen()))) {
-            activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
-            activity.getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        if (DeviceUtils.isInMultiWindow(activity) || isFullscreen()) {
+            window.setStatusBarColor(Color.TRANSPARENT);
+            window.setNavigationBarColor(Color.TRANSPARENT);
         }
     }
 
