@@ -16,6 +16,11 @@ import org.schabi.newpipe.util.InfoCache;
 import org.schabi.newpipe.util.TLSSocketFactoryCompat;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +40,8 @@ import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+
+import static org.schabi.newpipe.MainActivity.DEBUG;
 
 public final class DownloaderImpl extends Downloader {
     public static final String USER_AGENT =
