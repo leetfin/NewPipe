@@ -133,6 +133,16 @@ public final class DownloaderImpl extends Downloader {
     }
 
     public String getCookies(final String url) {
+        final List<String> resultCookies = new ArrayList<>();
+        if (url.contains(YOUTUBE_DOMAIN)) {
+            final String youtubeCookie = getCookie(YOUTUBE_RESTRICTED_MODE_COOKIE_KEY);
+            if (youtubeCookie != null) {
+                resultCookies.add(youtubeCookie);
+            }
+        }
+    }
+
+    public String getCookies(final String url) {
         final String youtubeCookie = url.contains(YOUTUBE_DOMAIN)
                 ? getCookie(YOUTUBE_RESTRICTED_MODE_COOKIE_KEY) : null;
 
