@@ -103,13 +103,12 @@ fun View.animateBackgroundColor(duration: Long, @ColorInt colorStart: Int, @Colo
     val viewPropertyAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorStart, colorEnd)
     viewPropertyAnimator.interpolator = FastOutSlowInInterpolator()
     viewPropertyAnimator.duration = duration
-    viewPropertyAnimator.addUpdateListener { animation: ValueAnimator ->
-        backgroundTintListCompat = ColorStateList(empty, intArrayOf(animation.animatedValue as Int))
+
+    fun listenerAction(color: Int) {
+        ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(color))
     }
-    viewPropertyAnimator.addListener(
-        onCancel = { backgroundTintListCompat = ColorStateList(empty, intArrayOf(colorEnd)) },
-        onEnd = { backgroundTintListCompat = ColorStateList(empty, intArrayOf(colorEnd)) }
-    )
+    viewPropertyAnimator.addUpdateListener { listenerAction(it.animatedValue as Int) }
+    viewPropertyAnimator.addListener(onCancel = { listenerAction(colorEnd) }, onEnd = { listenerAction(colorEnd) })
     viewPropertyAnimator.start()
 }
 

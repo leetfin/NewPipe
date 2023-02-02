@@ -218,7 +218,6 @@
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_menu_book"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/ic_format_list_numbered"
                         app:tint="@color/white"
                         tools:ignore="ContentDescription,RtlHardcoded" />
 
@@ -400,7 +399,7 @@
                         android:paddingTop="2dp"
                         android:src="@drawable/placeholder_thumbnail_video"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/dummy_thumbnail"
+                        app:srcCompat="@drawable/placeholder_thumbnail_video"
                         tools:visibility="visible" />
 
                 </LinearLayout>
