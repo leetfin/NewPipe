@@ -5,7 +5,7 @@ import static org.schabi.newpipe.player.notification.NotificationConstants.ACTIO
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.widget.TextViewCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -35,7 +35,6 @@ import org.schabi.newpipe.util.ThemeHelper;
 import org.schabi.newpipe.views.FocusOverlayView;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class NotificationActionsPreference extends Preference {
 
@@ -75,11 +74,13 @@ public class NotificationActionsPreference extends Preference {
     ////////////////////////////////////////////////////////////////////////////
 
     private void setupActions(@NonNull final View view) {
-        compactSlots = NotificationConstants.getCompactSlotsFromPreferences(getContext(),
-                getSharedPreferences(), 5);
-        notificationSlots = IntStream.range(0, 5)
-                .mapToObj(i -> new NotificationSlot(i, view))
-                .toArray(NotificationSlot[]::new);
+        compactSlots =
+                NotificationConstants.getCompactSlotsFromPreferences(
+                        getContext(), getSharedPreferences(), 5);
+        notificationSlots = new NotificationSlot[5];
+        for (int i = 0; i < 5; i++) {
+            notificationSlots[i] = new NotificationSlot(i, view);
+        }
     }
 
 
