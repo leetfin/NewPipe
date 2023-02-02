@@ -21,6 +21,10 @@ import org.schabi.newpipe.MainActivity
 
 private const val TAG = "ViewUtils"
 
+inline var View.backgroundTintListCompat: ColorStateList?
+    get() = ViewCompat.getBackgroundTintList(this)
+    set(value) = ViewCompat.setBackgroundTintList(this, value)
+
 /**
  * Animate the view.
  *
@@ -99,12 +103,13 @@ fun View.animateBackgroundColor(duration: Long, @ColorInt colorStart: Int, @Colo
     val viewPropertyAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorStart, colorEnd)
     viewPropertyAnimator.interpolator = FastOutSlowInInterpolator()
     viewPropertyAnimator.duration = duration
-
-    fun listenerAction(color: Int) {
-        ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(color))
+    viewPropertyAnimator.addUpdateListener { animation: ValueAnimator ->
+        backgroundTintListCompat = ColorStateList(empty, intArrayOf(animation.animatedValue as Int))
     }
-    viewPropertyAnimator.addUpdateListener { listenerAction(it.animatedValue as Int) }
-    viewPropertyAnimator.addListener(onCancel = { listenerAction(colorEnd) }, onEnd = { listenerAction(colorEnd) })
+    viewPropertyAnimator.addListener(
+        onCancel = { backgroundTintListCompat = ColorStateList(empty, intArrayOf(colorEnd)) },
+        onEnd = { backgroundTintListCompat = ColorStateList(empty, intArrayOf(colorEnd)) }
+    )
     viewPropertyAnimator.start()
 }
 

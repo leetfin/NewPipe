@@ -214,13 +214,17 @@ public class NotificationActionsPreference extends Preference {
                         .getRoot();
 
                 // if present set action icon with correct color
-                final int iconId = NotificationConstants.ACTION_ICONS[action];
-                if (iconId != 0) {
-                    radioButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, iconId, 0);
-
-                    final var color = ColorStateList.valueOf(ThemeHelper
-                            .resolveColorFromAttr(getContext(), android.R.attr.textColorPrimary));
-                    TextViewCompat.setCompoundDrawableTintList(radioButton, color);
+                if (NotificationConstants.ACTION_ICONS[action] != 0) {
+                    Drawable drawable = AppCompatResources.getDrawable(getContext(),
+                            NotificationConstants.ACTION_ICONS[action]);
+                    if (drawable != null) {
+                        final int color = ThemeHelper.resolveColorFromAttr(getContext(),
+                                android.R.attr.textColorPrimary);
+                        drawable = DrawableCompat.wrap(drawable).mutate();
+                        DrawableCompat.setTint(drawable, color);
+                        radioButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null,
+                                null, drawable, null);
+                    }
                 }
 
                 radioButton.setText(NotificationConstants.getActionName(getContext(), action));

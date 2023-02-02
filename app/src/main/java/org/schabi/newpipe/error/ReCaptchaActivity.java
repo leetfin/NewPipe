@@ -3,15 +3,14 @@ package org.schabi.newpipe.error;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +18,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 import androidx.preference.PreferenceManager;
+import androidx.webkit.WebViewClientCompat;
 
 import org.schabi.newpipe.DownloaderImpl;
 import org.schabi.newpipe.MainActivity;
@@ -86,15 +86,14 @@ public class ReCaptchaActivity extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setUserAgentString(DownloaderImpl.USER_AGENT);
 
-        recaptchaBinding.reCaptchaWebView.setWebViewClient(new WebViewClient() {
+        recaptchaBinding.reCaptchaWebView.setWebViewClient(new WebViewClientCompat() {
             @Override
-            public boolean shouldOverrideUrlLoading(final WebView view,
-                                                    final WebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
                 if (MainActivity.DEBUG) {
-                    Log.d(TAG, "shouldOverrideUrlLoading: url=" + request.getUrl().toString());
+                    Log.d(TAG, "shouldOverrideUrlLoading: url=" + url);
                 }
 
-                handleCookiesFromUrl(request.getUrl().toString());
+                handleCookiesFromUrl(url);
                 return false;
             }
 
@@ -108,7 +107,12 @@ public class ReCaptchaActivity extends AppCompatActivity {
         // cleaning cache, history and cookies from webView
         recaptchaBinding.reCaptchaWebView.clearCache(true);
         recaptchaBinding.reCaptchaWebView.clearHistory();
-        CookieManager.getInstance().removeAllCookies(null);
+        final CookieManager cookieManager = CookieManager.getInstance();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.removeAllCookies(value -> { });
+        } else {
+            cookieManager.removeAllCookie();
+        }
 
         recaptchaBinding.reCaptchaWebView.loadUrl(url);
     }

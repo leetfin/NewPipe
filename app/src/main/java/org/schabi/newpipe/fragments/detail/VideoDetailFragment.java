@@ -1904,7 +1904,13 @@ public final class VideoDetailFragment
         }
         scrollToTop();
 
-        tryAddVideoPlayerView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            addVideoPlayerView();
+        } else {
+            // KitKat needs a delay before addVideoPlayerView call or it reports wrong height in
+            // activity.getWindow().getDecorView().getHeight()
+            new Handler().post(this::addVideoPlayerView);
+        }
     }
 
     @Override
@@ -1960,17 +1966,17 @@ public final class VideoDetailFragment
             return;
         }
 
-        final var window = activity.getWindow();
-        final var windowInsetsController = WindowCompat.getInsetsController(window,
-                window.getDecorView());
-
-        WindowCompat.setDecorFitsSystemWindows(window, true);
-        windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat
-                .BEHAVIOR_SHOW_BARS_BY_TOUCH);
-        windowInsetsController.show(WindowInsetsCompat.Type.systemBars());
-
-        window.setStatusBarColor(ThemeHelper.resolveColorFromAttr(requireContext(),
-                android.R.attr.colorPrimary));
+        // Prevent jumping of the player on devices with cutout
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            activity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+        }
+        activity.getWindow().getDecorView().setSystemUiVisibility(0);
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setStatusBarColor(ThemeHelper.resolveColorFromAttr(
+                    requireContext(), android.R.attr.colorPrimary));
+        }
     }
 
     private void hideSystemUi() {
@@ -1991,9 +1997,10 @@ public final class VideoDetailFragment
                 .BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
-        if (DeviceUtils.isInMultiWindow(activity) || isFullscreen()) {
-            window.setStatusBarColor(Color.TRANSPARENT);
-            window.setNavigationBarColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && (isInMultiWindow || (isPlayerAvailable() && player.isFullscreen()))) {
+            activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            activity.getWindow().setNavigationBarColor(Color.TRANSPARENT);
         }
     }
 
