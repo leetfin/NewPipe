@@ -12,6 +12,7 @@ import org.schabi.newpipe.extractor.downloader.Downloader;
 import org.schabi.newpipe.extractor.downloader.Request;
 import org.schabi.newpipe.extractor.downloader.Response;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
+import org.schabi.newpipe.util.CookieUtils;
 import org.schabi.newpipe.util.InfoCache;
 import org.schabi.newpipe.util.TLSSocketFactoryCompat;
 
@@ -25,10 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -44,10 +42,10 @@ import okhttp3.ResponseBody;
 import static org.schabi.newpipe.MainActivity.DEBUG;
 
 public final class DownloaderImpl extends Downloader {
-    public static final String USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0";
-    public static final String YOUTUBE_RESTRICTED_MODE_COOKIE_KEY =
-            "youtube_restricted_mode_key";
+    public static final String USER_AGENT
+            = "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0";
+    public static final String YOUTUBE_RESTRICTED_MODE_COOKIE_KEY
+            = "youtube_restricted_mode_key";
     public static final String YOUTUBE_RESTRICTED_MODE_COOKIE = "PREF=f2=8000000";
     public static final String YOUTUBE_DOMAIN = "youtube.com";
 
@@ -140,18 +138,12 @@ public final class DownloaderImpl extends Downloader {
                 resultCookies.add(youtubeCookie);
             }
         }
-    }
-
-    public String getCookies(final String url) {
-        final String youtubeCookie = url.contains(YOUTUBE_DOMAIN)
-                ? getCookie(YOUTUBE_RESTRICTED_MODE_COOKIE_KEY) : null;
-
         // Recaptcha cookie is always added TODO: not sure if this is necessary
-        return Stream.of(youtubeCookie, getCookie(ReCaptchaActivity.RECAPTCHA_COOKIES_KEY))
-                .filter(Objects::nonNull)
-                .flatMap(cookies -> Arrays.stream(cookies.split("; *")))
-                .distinct()
-                .collect(Collectors.joining("; "));
+        final String recaptchaCookie = getCookie(ReCaptchaActivity.RECAPTCHA_COOKIES_KEY);
+        if (recaptchaCookie != null) {
+            resultCookies.add(recaptchaCookie);
+        }
+        return CookieUtils.concatCookies(resultCookies);
     }
 
     public String getCookie(final String key) {
@@ -211,7 +203,7 @@ public final class DownloaderImpl extends Downloader {
 
         RequestBody requestBody = null;
         if (dataToSend != null) {
-            requestBody = RequestBody.create(dataToSend);
+            requestBody = RequestBody.create(null, dataToSend);
         }
 
         final okhttp3.Request.Builder requestBuilder = new okhttp3.Request.Builder()
